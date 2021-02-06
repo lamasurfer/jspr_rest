@@ -1,0 +1,72 @@
+GET http://localhost:9999/api/posts
+
+###
+
+POST http://localhost:9999/api/posts
+Content-Type: application/json
+
+{
+  "id": 0,
+  "content": "1st post"
+}
+
+###
+
+POST http://localhost:9999/api/posts
+Content-Type: application/json
+
+{
+  "id": 0,
+  "content": "2nd post"
+}
+
+###
+
+POST http://localhost:9999/api/posts
+Content-Type: application/json
+
+{
+  "id": 0,
+  "content": "3rd post"
+}
+
+###
+
+GET http://localhost:9999/api/posts/2
+
+###
+
+POST http://localhost:9999/api/posts
+Content-Type: application/json
+
+{
+  "id": 2,
+  "content": "Replaced 2nd post"
+}
+
+###
+
+GET http://localhost:9999/api/posts
+
+###
+
+POST http://localhost:9999/api/posts
+Content-Type: application/json
+
+{
+  "id": 100,
+  "content": "No post to replace then new post"
+}
+
+###
+
+DELETE http://localhost:9999/api/posts/3
+
+###
+
+GET http://localhost:9999/api/posts
+
+###
+
+DELETE http://localhost:9999/api/posts/1000
+
