@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 
 @Service
 public class PostService {
@@ -19,28 +20,41 @@ public class PostService {
     }
 
     public List<Post> all() {
-        return repository.all();
+        return repository.all()
+                .stream()
+                .filter(post -> !post.isFlaggedAsRemoved())
+                .collect(Collectors.toList());
     }
 
     public Post getById(long id) {
-        return repository.getById(id).orElseThrow(NotFoundException::new);
+        return repository.getById(id)
+                .filter(post -> !post.isFlaggedAsRemoved())
+                .orElseThrow(NotFoundException::new);
     }
 
     public Post save(Post post) {
         final var id = post.getId();
+        if (id == 0) {
+            post.setId(counter.getAndIncrement());
+            return repository.save(post);
+        }
         final var optionalPost = repository.getById(id);
-        if (id != 0 && optionalPost.isPresent()) {
-            final var oldPost = optionalPost.get();
+        if (optionalPost.isEmpty()) {
+            post.setId(counter.getAndIncrement());
+            return repository.save(post);
+        }
+        final var oldPost = optionalPost.get();
+        if (!oldPost.isFlaggedAsRemoved()) {
             oldPost.setContent(post.getContent());
             return repository.save(oldPost);
         } else {
-            post.setId(counter.getAndIncrement());
-            return repository.save(post);
+            throw new NotFoundException();
         }
     }
 
     public void removeById(long id) {
-        repository.removeById(id);
+        var post = getById(id);
+        post.setFlaggedAsRemoved(true);
     }
 }
 
