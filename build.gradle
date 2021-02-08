@@ -1,0 +1,57 @@
+plugins {
+    id 'java'
+    id 'idea'
+    id 'java-library'
+    id 'application'
+}
+
+group 'org.example'
+version '1.0-SNAPSHOT'
+mainClassName = 'org.example.Main'
+
+def junitVersion = '5.7.1'
+def mockitoVersion = '3.7.7'
+def javaxServletApiVersion = '4.0.1'
+def springVersion = '5.2.9.RELEASE'
+def tomcatEmbedVersion = '9.0.43'
+def gsonVersion = '2.8.6'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_14
+    targetCompatibility = JavaVersion.VERSION_14
+    compileJava.options.encoding = 'UTF-8'
+    compileTestJava.options.encoding = 'UTF-8'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
+    testImplementation "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
+    testImplementation "org.junit.jupiter:junit-jupiter-params:$junitVersion"
+    testImplementation "org.mockito:mockito-core:$mockitoVersion"
+    testImplementation "org.mockito:mockito-junit-jupiter:$mockitoVersion"
+    implementation "org.springframework:spring-webmvc:$springVersion"
+    compileOnly "javax.servlet:javax.servlet-api:$javaxServletApiVersion"
+    implementation "org.apache.tomcat.embed:tomcat-embed-core:$tomcatEmbedVersion"
+    implementation "org.apache.tomcat.embed:tomcat-embed-jasper:$tomcatEmbedVersion"
+    implementation "com.google.code.gson:gson:$gsonVersion"
+}
+
+test {
+    useJUnitPlatform()
+}
+
+jar {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    manifest {
+        attributes(
+                'Main-Class':mainClassName
+        )
+    }
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
